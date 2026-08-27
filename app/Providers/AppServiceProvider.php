@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use App\Models\PersonalAccessToken;
 use App\Models\SupportInquiryMessage;
+use App\Models\WalletTransaction;
 use App\Observers\SupportInquiryMessageObserver;
+use App\Observers\WalletTransactionObserver;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -63,6 +65,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         SupportInquiryMessage::observe(SupportInquiryMessageObserver::class);
+        WalletTransaction::observe(WalletTransactionObserver::class);
 
         $this->warnMisconfiguredLocalPusher();
     }

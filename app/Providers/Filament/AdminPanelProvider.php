@@ -34,6 +34,7 @@ class AdminPanelProvider extends PanelProvider
             // Loads window.Echo in the panel (when config/filament.php echo block is set) so the
             // Crash live-ops console gets real-time pulses instead of falling back to the wire poll.
             ->broadcasting()
+            ->databaseNotifications()
             ->brandName('CrashX Console')
             ->brandLogo(asset('images/crashx-ops-mark.svg'))
             ->favicon(asset('images/crashx-ops-mark.svg'))

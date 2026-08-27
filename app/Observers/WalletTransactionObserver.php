@@ -5,8 +5,9 @@ namespace App\Observers;
 use App\Models\Admin;
 use App\Models\WalletTransaction;
 use Filament\Notifications\Notification;
+use Illuminate\Contracts\Events\ShouldHandleEventsAfterCommit;
 
-class WalletTransactionObserver
+class WalletTransactionObserver implements ShouldHandleEventsAfterCommit
 {
     public function created(WalletTransaction $transaction): void
     {
@@ -55,7 +56,7 @@ class WalletTransactionObserver
         // Fetch all admins and broadcast the database notification to them via Echo
         $admins = Admin::all();
         if ($admins->isNotEmpty()) {
-            $notification->sendToDatabase($admins);
+            $notification->sendToDatabase($admins)->broadcast($admins);
         }
     }
 }

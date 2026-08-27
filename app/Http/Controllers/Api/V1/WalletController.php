@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\WalletDepositClaimRequest;
 use App\Http\Requests\WalletWithdrawRequest;
 use App\Services\Tenant\TenantResolver;
+use App\Services\Wallet\WalletDepositClaimService;
 use App\Services\Wallet\WalletReadService;
 use App\Services\Wallet\WalletWithdrawService;
 use Illuminate\Http\JsonResponse;
@@ -28,5 +30,16 @@ class WalletController extends Controller
         WalletWithdrawService $withdraw,
     ): JsonResponse {
         return $withdraw->submit($request, $tenants);
+    }
+
+    public function claimDeposit(
+        WalletDepositClaimRequest $request,
+        WalletDepositClaimService $claimService,
+    ): JsonResponse {
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+        $claimService->submit($user, $request->validated('currency'), $request->validated('network'));
+
+        return response()->json(['success' => true]);
     }
 }

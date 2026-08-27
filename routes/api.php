@@ -61,6 +61,8 @@ Route::prefix('v1')->group(function (): void {
             ->middleware('throttle:wallet-read');
         Route::post('/wallet/withdraw', [WalletController::class, 'withdraw'])
             ->middleware('throttle:wallet-write');
+        Route::post('/wallet/deposit-claim', [WalletController::class, 'claimDeposit'])
+            ->middleware('throttle:wallet-write');
 
         Route::get('/games/crash/state', [CrashGameController::class, 'state'])
             ->middleware('throttle:crash-api');

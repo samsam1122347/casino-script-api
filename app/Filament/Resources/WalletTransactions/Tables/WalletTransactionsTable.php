@@ -3,10 +3,12 @@
 namespace App\Filament\Resources\WalletTransactions\Tables;
 
 use App\Models\WalletTransaction;
+use App\Services\Wallet\WalletDepositApprovalService;
 use App\Services\Wallet\WalletWithdrawalApprovalService;
 use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\TextColumn;
@@ -112,6 +114,8 @@ class WalletTransactionsTable
                     }),
             ])
             ->recordActions([
+                self::approveDepositAction(),
+                self::rejectDepositAction(),
                 self::approveWithdrawalAction(),
                 self::rejectWithdrawalAction(),
                 ViewAction::make(),
@@ -177,5 +181,77 @@ class WalletTransactionsTable
         return $record->type === 'withdrawal'
             && ($record->meta['status'] ?? null) === 'pending'
             && (int) $record->amount_minor < 0;
+    }
+
+    private static function isPendingDeposit(WalletTransaction $record): bool
+    {
+        return $record->type === 'deposit'
+            && ($record->meta['status'] ?? null) === 'pending'
+            && (int) $record->amount_minor === 0;
+    }
+
+    private static function approveDepositAction(): Action
+    {
+        return Action::make('approveDeposit')
+            ->label('Approve')
+            ->color('success')
+            ->modalHeading('Approve deposit claim')
+            ->modalSubmitActionLabel('Approve and credit')
+            ->schema([
+                TextInput::make('amount_major')
+                    ->label('Amount Received (USD)')
+                    ->numeric()
+                    ->required()
+                    ->minValue(0.01)
+                    ->step(0.01),
+            ])
+            ->visible(fn (WalletTransaction $record): bool => self::isPendingDeposit($record))
+            ->action(function (array $data, WalletTransaction $record): void {
+                try {
+                    $amountMinor = (int) round((float) $data['amount_major'] * 100);
+                    app(WalletDepositApprovalService::class)->approve(
+                        $record,
+                        $amountMinor,
+                        auth('admin')->id() !== null ? (string) auth('admin')->id() : null,
+                    );
+                } catch (HttpException $e) {
+                    Notification::make()->title($e->getMessage())->danger()->send();
+
+                    return;
+                }
+
+                Notification::make()->title('Deposit approved and credited')->success()->send();
+            });
+    }
+
+    private static function rejectDepositAction(): Action
+    {
+        return Action::make('rejectDeposit')
+            ->label('Reject')
+            ->color('danger')
+            ->modalHeading('Reject deposit claim')
+            ->modalSubmitActionLabel('Reject')
+            ->schema([
+                Textarea::make('reason')
+                    ->label('Reason')
+                    ->maxLength(500)
+                    ->rows(3),
+            ])
+            ->visible(fn (WalletTransaction $record): bool => self::isPendingDeposit($record))
+            ->action(function (array $data, WalletTransaction $record): void {
+                try {
+                    app(WalletDepositApprovalService::class)->reject(
+                        $record,
+                        auth('admin')->id() !== null ? (string) auth('admin')->id() : null,
+                        isset($data['reason']) ? (string) $data['reason'] : null,
+                    );
+                } catch (HttpException $e) {
+                    Notification::make()->title($e->getMessage())->danger()->send();
+
+                    return;
+                }
+
+                Notification::make()->title('Deposit claim rejected')->success()->send();
+            });
     }
 }

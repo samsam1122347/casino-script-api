@@ -44,12 +44,12 @@ class UserResource extends Resource
 
     public static function canDelete(Model $record): bool
     {
-        return false;
+        return true;
     }
 
     public static function canDeleteAny(): bool
     {
-        return false;
+        return true;
     }
 
     public static function getGloballySearchableAttributes(): array

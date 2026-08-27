@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\SupportInquiryFollowUpController;
 use App\Http\Controllers\Api\V1\SupportInquiryThreadController;
 use App\Http\Controllers\Api\V1\WalletController;
 use App\Http\Controllers\Api\V1\WebhookDemoController;
+use App\Http\Middleware\EnsureUserIsNotBlocked;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function (): void {
@@ -48,7 +49,7 @@ Route::prefix('v1')->group(function (): void {
     Route::post('/support/broadcast-auth', SupportGuestBroadcastAuthController::class)
         ->middleware('throttle:broadcast-auth');
 
-    Route::middleware('auth:sanctum')->group(function (): void {
+    Route::middleware(['auth:sanctum', EnsureUserIsNotBlocked::class])->group(function (): void {
         Route::post('/auth/logout', [AuthController::class, 'logout']);
         Route::get('/auth/me', [AuthController::class, 'me']);
         Route::patch('/auth/password', [AuthController::class, 'updatePassword'])

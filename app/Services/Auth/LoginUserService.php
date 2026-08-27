@@ -25,6 +25,13 @@ final class LoginUserService
             throw new HttpResponseException(response()->json(['message' => 'Invalid credentials.'], 401));
         }
 
+        if ($user->is_blocked) {
+            throw new HttpResponseException(response()->json([
+                'message' => 'Your account has been suspended.',
+                'reason' => $user->blocked_reason,
+            ], 403));
+        }
+
         $token = $user->createToken('web', ['*'])->plainTextToken;
         $user->load(['tenant:id,slug,display_name', 'wallet']);
 

@@ -27,6 +27,8 @@ use Laravel\Sanctum\HasApiTokens;
     'recovery_answer_1',
     'recovery_answer_2',
     'recovery_answer_3',
+    'is_blocked',
+    'blocked_reason',
 ])]
 #[Hidden([
     'password',
@@ -69,6 +71,7 @@ class User extends Authenticatable
             'recovery_answer_1' => 'hashed',
             'recovery_answer_2' => 'hashed',
             'recovery_answer_3' => 'hashed',
+            'is_blocked' => 'boolean',
         ];
     }
 }

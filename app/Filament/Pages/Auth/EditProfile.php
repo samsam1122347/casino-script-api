@@ -28,4 +28,16 @@ class EditProfile extends BaseEditProfile
             ->maxLength(255)
             ->unique(ignoreRecord: true);
     }
+
+    protected function getPasswordFormComponent(): Component
+    {
+        return parent::getPasswordFormComponent()
+            ->formatStateUsing(fn () => null);
+    }
+
+    protected function getPasswordConfirmationFormComponent(): Component
+    {
+        return parent::getPasswordConfirmationFormComponent()
+            ->formatStateUsing(fn () => null);
+    }
 }

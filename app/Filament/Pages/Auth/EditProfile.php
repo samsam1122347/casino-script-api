@@ -31,15 +31,23 @@ class EditProfile extends BaseEditProfile
 
     protected function getPasswordFormComponent(): Component
     {
-        return parent::getPasswordFormComponent()
+        return TextInput::make('password')
             ->label(__('New password'))
+            ->password()
+            ->autocomplete('new-password')
+            ->dehydrated(fn (?string $state): bool => filled($state))
+            ->live(debounce: 500)
+            ->same('passwordConfirmation')
             ->formatStateUsing(fn () => null);
     }
 
     protected function getPasswordConfirmationFormComponent(): Component
     {
-        return parent::getPasswordConfirmationFormComponent()
+        return TextInput::make('passwordConfirmation')
             ->label(__('Confirm new password'))
+            ->password()
+            ->requiredWith('password')
+            ->dehydrated(false)
             ->formatStateUsing(fn () => null);
     }
 }

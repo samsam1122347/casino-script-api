@@ -32,12 +32,14 @@ class EditProfile extends BaseEditProfile
     protected function getPasswordFormComponent(): Component
     {
         return parent::getPasswordFormComponent()
+            ->label(__('New password'))
             ->formatStateUsing(fn () => null);
     }
 
     protected function getPasswordConfirmationFormComponent(): Component
     {
         return parent::getPasswordConfirmationFormComponent()
+            ->label(__('Confirm new password'))
             ->formatStateUsing(fn () => null);
     }
 }

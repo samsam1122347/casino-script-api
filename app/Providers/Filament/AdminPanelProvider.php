@@ -31,7 +31,7 @@ class AdminPanelProvider extends PanelProvider
             ->path((string) config('admin.panel_path', 'admin'))
             ->login(AdminLogin::class)
             ->authGuard('admin')
-            ->profile(\App\Filament\Pages\Auth\EditProfile::class)
+            ->profile(\App\Filament\Pages\Auth\EditProfile::class, isSimple: false)
             // Loads window.Echo in the panel (when config/filament.php echo block is set) so the
             // Crash live-ops console gets real-time pulses instead of falling back to the wire poll.
             ->broadcasting()

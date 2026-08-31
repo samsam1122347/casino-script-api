@@ -16,19 +16,19 @@ class AdminSeeder extends Seeder
 
     public function run(): void
     {
-        $password = (string) env('ADMIN_PASSWORD', '');
-        if ($password === '') {
-            throw new RuntimeException(
-                'AdminSeeder requires ADMIN_PASSWORD in .env (e.g. ADMIN_PASSWORD=your-secure-password php artisan db:seed --class=AdminSeeder).',
-            );
-        }
+        // $password = (string) env('ADMIN_PASSWORD', '');
+        // if ($password === '') {
+        //     throw new RuntimeException(
+        //         'AdminSeeder requires ADMIN_PASSWORD in .env (e.g. ADMIN_PASSWORD=your-secure-password php artisan db:seed --class=AdminSeeder).',
+        //     );
+        // }
 
-        Admin::query()->updateOrCreate(
-            ['username' => self::ADMIN_USERNAME],
-            [
-                'name' => 'CrashX Console',
-                'password' => Hash::make($password),
-            ]
-        );
+        // Admin::query()->updateOrCreate(
+        //     ['username' => self::ADMIN_USERNAME],
+        //     [
+        //         'name' => 'CrashX Console',
+        //         'password' => Hash::make($password),
+        //     ]
+        // );
     }
 }
